@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">KBC with Shalaka</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="reset">Reset Quiz</string>
+    <string name="category_1">Mathematics</string>
+    <string name="category_2">General Knowledge</string>
+    <string name="question_placeholder">Question</string>
+    <string name="option1">Option 1</string>
+    <string name="option2">Option 2</string>
+    <string name="option3">Option 3</string>
+    <string name="option4">Option 4</string>
+    <string name="score">Score</string>
+    <string name="_0">0</string>
+    <string name="next_button">Next</string>
+    <string name="submit_button">Submit</string>
+    <string name="prev_button">Previous</string>
+    <string name="action_settings">Reset Game</string>
+    <string name="category_name">Category</string>
+    <string name="questionid">Question 0</string>
+    <string name="change_category">* To change category open navigation drawer</string>
+</resources>
