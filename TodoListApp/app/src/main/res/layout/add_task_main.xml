@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ScrollView01"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:scrollbars="vertical">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
+
+        <!--Put form controls here-->
+
+        <TextView
+            android:id="@+id/TextViewTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="30dp"
+            android:gravity="center"
+            android:text="@string/add_task"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="60dp"
+            android:gravity="center"
+            android:hint="Task Description">
+
+            <requestFocus />
+
+        </EditText>
+
+        <CalendarView
+            android:id="@+id/simpleCalendarView"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="110dp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"/>
+
+
+
+    </RelativeLayout>
+</ScrollView>
