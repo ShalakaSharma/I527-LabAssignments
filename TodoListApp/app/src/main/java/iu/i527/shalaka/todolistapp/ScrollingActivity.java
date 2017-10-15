@@ -9,16 +9,29 @@ import android.widget.CalendarView;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 public class ScrollingActivity extends AppCompatActivity {
 
+    ArrayList<ToDoTask> toDoList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scrolling);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        Intent intent = getIntent();
+        if (intent.hasExtra("list")) {
+            toDoList = (ArrayList)intent.getSerializableExtra("list");
+            Toast.makeText(this, "List present ", Toast.LENGTH_SHORT).show();
+           /* ToDoTask task = (ToDoTask)intent.getSerializableExtra("toDoTask");
+            Toast.makeText(this, "taskDescription: " + task.getTask_description(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "date: " + task.getDate().getDate() + task.getDate().getMonth() + task.getDate().getYear(), Toast.LENGTH_SHORT).show();*/
+        } else {
+            Toast.makeText(this, "List absent ", Toast.LENGTH_SHORT).show();
+            toDoList = new ArrayList<ToDoTask>();
+        }
     }
 
     public void onClickSaveButton(View view) {
@@ -32,8 +45,10 @@ public class ScrollingActivity extends AppCompatActivity {
 
         ToDoTask newTask = new ToDoTask(taskDescription, date, false);
 
+        toDoList.add(newTask);
+
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        intent.putExtra("toDoTask", newTask);
+        intent.putExtra("list", toDoList);
         startActivity(intent);
     }
 }

@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,12 +33,18 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        Intent intent = getIntent();
+        if (intent.hasExtra("list")) {
+            toDoList = (ArrayList)intent.getSerializableExtra("list");
+            Toast.makeText(this, "New list", Toast.LENGTH_SHORT).show();
+        }
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                  /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();*/
                 Intent intent = new Intent(getApplicationContext(), ScrollingActivity.class);
+                intent.putExtra("list", toDoList);
                 startActivity(intent);
             }
         });
