@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,16 +60,14 @@ public class MainActivity extends AppCompatActivity
 
     public void renderToDoList(ArrayList<ToDoTask> toDoList) {
 
-        LinearLayout ll = (LinearLayout) findViewById(R.id.listLayout);
-
+        LinearLayout ll =(LinearLayout)findViewById(R.id.listLayout);
         for(ToDoTask task:toDoList ){
             CheckBox cb = new CheckBox(getApplicationContext());
             cb.setText(task.getTask_description());
             cb.setTextColor(Color.parseColor("#000000"));
-            cb.setHeight(30);
-            cb.setWidth(30);
             cb.setTextSize(16);
             cb.setPadding(10,60,10,60);
+            //cb.setHeight(40);
             ll.addView(cb);
         }
 
