@@ -1,5 +1,6 @@
 package iu.i527.shalaka.todolistapp;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -7,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -18,6 +20,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
@@ -27,6 +31,8 @@ import android.widget.Toast;
 
 import android.widget.RelativeLayout;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -74,14 +80,17 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    public void renderToDoList(ArrayList<ToDoTask> toDoList) {
+    public void renderToDoList(final ArrayList<ToDoTask> toDoList) {
         System.out.println("In renderToDoList");
         TableLayout tableLayout =(TableLayout)findViewById(R.id.tableLayout);
+        tableLayout.removeAllViews();
+        int i = 0;
         for(ToDoTask task:toDoList ){
             TableRow tableRow = new TableRow(getApplicationContext());
 
             CheckBox cb = new CheckBox(getApplicationContext());
             cb.setText(task.getTask_description());
+            cb.setChecked(task.isStatus());
             cb.setTextColor(Color.parseColor("#000000"));
             cb.setTextSize(16);
             ColorStateList colorStateList = new ColorStateList(
@@ -96,10 +105,63 @@ public class MainActivity extends AppCompatActivity
             );
             cb.setButtonTintList(colorStateList);
             cb.setPadding(10,60,10,60);
+            cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                                              @Override
+                                              public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                                                  Toast.makeText(MainActivity.this,
+                                                          "isChecked:" + isChecked, Toast.LENGTH_SHORT).show();
+                                                  CheckBox cb = (CheckBox) buttonView;
+                                                  TableRow t = (TableRow) buttonView.getParent();
+                                                  EditText editText1 = (EditText) t.getChildAt(1);
+                                                  Date date = new Date(Long.parseLong(editText1.getText().toString()));
+                                                  if (isChecked) {
+                                                      changeTaskStatus(cb.getText().toString(), date, true);
+                                                  } else {
+                                                      changeTaskStatus(cb.getText().toString(), date, false);
+                                                  }
+
+                                              }
+                                          });
+
             tableRow.addView(cb);
+            final EditText editText = new EditText(getApplicationContext());
+            editText.setText(task.getDate().getTime()+"");
+            editText.setVisibility(View.INVISIBLE);
+            tableRow.addView(editText);
             ImageButton button = new ImageButton(getApplicationContext());
             button.setImageResource(R.drawable.btn_close_normal);
             button.setBackgroundColor(Color.TRANSPARENT);
+            button.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(MainActivity.this,
+                            "ImageButton is clicked!", Toast.LENGTH_SHORT).show();
+                    if(view instanceof ImageButton) {
+                        Toast.makeText(MainActivity.this,
+                                "True!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(MainActivity.this,
+                                "false!", Toast.LENGTH_SHORT).show();
+                    }
+                    ImageButton b = (ImageButton) view;
+                    TableRow t = (TableRow) b.getParent();
+                    CheckBox cb = (CheckBox) t.getChildAt(0);
+                    EditText editText1 = (EditText) t.getChildAt(1);
+                    String taskDescription = cb.getText().toString();
+                    Date date = new Date(Long.parseLong(editText.getText().toString()));
+                    Toast.makeText(MainActivity.this,
+                            taskDescription, Toast.LENGTH_SHORT).show();
+                    DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                    Toast.makeText(MainActivity.this,
+                            "" + formatter.format(date), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this,
+                            "first: " + toDoList.get(0).getTask_description(), Toast.LENGTH_SHORT).show();
+                    deleteFromList(taskDescription, date);
+
+                }
+
+            });
             tableRow.addView(button);
             tableLayout.addView(tableRow);
 
@@ -170,4 +232,39 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    public void deleteFromList(String taskDesc, Date date) {
+        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        String dtString  = formatter.format(date);
+        int indexToDelete = -1;
+        for(int i=0; i< toDoList.size(); i++) {
+            ToDoTask task = toDoList.get(i);
+            String dt = formatter.format(task.getDate());
+            if(task.getTask_description().equals(taskDesc) && dtString.equals(dt)) {
+                indexToDelete = i;
+                break;
+            }
+        }
+        if(indexToDelete != -1) {
+            toDoList.remove(indexToDelete);
+        }
+        renderToDoList(toDoList);
+    }
+
+    public void changeTaskStatus(String taskDesc, Date date, boolean isCompleted) {
+        Toast.makeText(MainActivity.this,
+                "changeTaskStatus", Toast.LENGTH_SHORT).show();
+        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        String dtString  = formatter.format(date);
+        for(int i=0; i< toDoList.size(); i++) {
+            ToDoTask task = toDoList.get(i);
+            String dt = formatter.format(task.getDate());
+            if(task.getTask_description().equals(taskDesc) && dtString.equals(dt)) {
+                task.setStatus(isCompleted);
+                break;
+            }
+        }
+        renderToDoList(toDoList);
+    }
+
 }
