@@ -12,8 +12,8 @@ import java.util.Date;
 
 public class ToDoTask  {
 
-    private Date date;
     private String task_description;
+    private Date date;
     private boolean status;
 
     public Date getDate() {
