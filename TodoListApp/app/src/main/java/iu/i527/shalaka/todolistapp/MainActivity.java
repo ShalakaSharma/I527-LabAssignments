@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         initList();
-        startList();
+
     }
 
     public void initList(){
@@ -58,15 +58,15 @@ public class MainActivity extends AppCompatActivity
 
         ArrayList<ToDoTask> toDoList = new ArrayList<ToDoTask>();
         Date dt = new Date();
-        ToDoTask q1 = new ToDoTask();
-        ToDoTask q2 = new ToDoTask();
-        ToDoTask q3 = new ToDoTask();
-        ToDoTask q4 = new ToDoTask();
-        toDoList.add(q1);
-        toDoList.add(q2);
-        toDoList.add(q3);
-        toDoList.add(q4);
-        return questionList;
+        ToDoTask t1 = new ToDoTask();
+        ToDoTask t2 = new ToDoTask();
+        ToDoTask t3 = new ToDoTask();
+        ToDoTask t4 = new ToDoTask();
+        toDoList.add(t1);
+        toDoList.add(t2);
+        toDoList.add(t3);
+        toDoList.add(t4);
+        return toDoList;
     }
     @Override
     public void onBackPressed() {
