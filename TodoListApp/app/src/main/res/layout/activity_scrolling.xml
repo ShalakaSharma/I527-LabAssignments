@@ -41,6 +41,7 @@
         android:layout_margin="@dimen/fab_margin"
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|end"
-        app:srcCompat="@drawable/btn_check_buttonless_on_white" />
+        app:srcCompat="@drawable/btn_check_buttonless_on_white"
+        android:onClick="onClickSaveButton"/>
 
 </android.support.design.widget.CoordinatorLayout>
