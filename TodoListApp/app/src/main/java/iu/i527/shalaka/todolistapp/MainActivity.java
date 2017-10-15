@@ -1,10 +1,13 @@
 package iu.i527.shalaka.todolistapp;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -36,6 +39,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -159,29 +163,28 @@ public class MainActivity extends AppCompatActivity
 
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(MainActivity.this,
-                            "ImageButton is clicked!", Toast.LENGTH_SHORT).show();
-                    if(view instanceof ImageButton) {
-                        Toast.makeText(MainActivity.this,
-                                "True!", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(MainActivity.this,
-                                "false!", Toast.LENGTH_SHORT).show();
-                    }
+
                     ImageButton b = (ImageButton) view;
                     TableRow t = (TableRow) b.getParent();
                     CheckBox cb = (CheckBox) t.getChildAt(0);
                     EditText editText1 = (EditText) t.getChildAt(1);
-                    String taskDescription = cb.getText().toString();
-                    Date date = new Date(Long.parseLong(editText.getText().toString()));
-                    Toast.makeText(MainActivity.this,
-                            taskDescription, Toast.LENGTH_SHORT).show();
-                    DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                    Toast.makeText(MainActivity.this,
-                            "" + formatter.format(date), Toast.LENGTH_SHORT).show();
-                    Toast.makeText(MainActivity.this,
-                            "first: " + toDoList.get(0).getTask_description(), Toast.LENGTH_SHORT).show();
+                    final String taskDescription = cb.getText().toString();
+                    final Date date = new Date(Long.parseLong(editText.getText().toString()));
+                    final boolean status = cb.isChecked();
+
                     deleteFromList(taskDescription, date);
+
+                    Snackbar.make(findViewById(R.id.tableLayout), "1 Item Removed", Snackbar.LENGTH_LONG)
+                            .setAction("UNDO",
+                                    new View.OnClickListener() {
+
+                                        @Override
+                                        public void onClick(View view) {
+                                            ToDoTask toDoTask = new ToDoTask(taskDescription, date, status);
+                                            toDoList.add(toDoTask);
+                                            renderToDoList(toDoList,lastNavSelected);
+                                        }
+                                    }).show();
 
                 }
 
