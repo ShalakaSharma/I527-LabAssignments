@@ -6,62 +6,63 @@
     android:layout_height="wrap_content"
     android:fillViewport="true">
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/listLayout"
+        <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/tableLayout"
             android:layout_width="match_parent"
+            android:layout_marginTop="50dp"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-          <!-- <CheckBox
+          <!--<CheckBox
                 android:id="@+id/chkIos"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="40dp"
                 android:checked="true"
-                android:text="@string/chk_task1" />
+                android:text="@string/chk_task1" />-->
+            <!--
+                        <CheckBox
+                            android:id="@+id/chkAndroid"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:checked="true"
+                            android:text="@string/chk_task2" />
 
-            <CheckBox
-                android:id="@+id/chkAndroid"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:checked="true"
-                android:text="@string/chk_task2" />
+                        <CheckBox
+                            android:id="@+id/chkWindows"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:text="@string/chk_task3" />
 
-            <CheckBox
-                android:id="@+id/chkWindows"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="@string/chk_task3" />
+                        <CheckBox
+                            android:id="@+id/chkDisplay"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:text="@string/chk_task4" />
 
-            <CheckBox
-                android:id="@+id/chkDisplay"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="@string/chk_task4" />
+                        <CheckBox
+                            android:id="@+id/chkLaptop"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:text="@string/chk_task5" />
 
-            <CheckBox
-                android:id="@+id/chkLaptop"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="@string/chk_task5" />
+                        <CheckBox
+                            android:id="@+id/chkKidneys"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:text="@string/chk_task6" />
 
-            <CheckBox
-                android:id="@+id/chkKidneys"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="@string/chk_task6" />
-
-            <CheckBox
-                android:id="@+id/chkKidneys2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="@string/chk_task6" />-->
+                        <CheckBox
+                            android:id="@+id/chkKidneys2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:text="@string/chk_task6" />-->
 <!--
             <CheckBox
                 android:id="@+id/chkKidneys3"
@@ -92,6 +93,6 @@
                 android:text="@string/chk_task6" />
                 -->
 
-        </LinearLayout>
+        </TableLayout>
 
 </ScrollView>

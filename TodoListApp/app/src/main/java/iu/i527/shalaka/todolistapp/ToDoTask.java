@@ -9,8 +9,10 @@ import java.util.Date;
 /**
  * Created by Ramya on 10/14/2017.
  */
+import java.io.Serializable;
 
-public class ToDoTask  {
+@SuppressWarnings("serial")
+public class ToDoTask implements Serializable {
 
     private String task_description;
     private Date date;
@@ -44,5 +46,8 @@ public class ToDoTask  {
         this.task_description = task_description;
         this.date = date;
         this.status = status;
+    }
+
+    public ToDoTask() {
     }
 }
