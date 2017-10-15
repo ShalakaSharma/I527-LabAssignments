@@ -2,7 +2,6 @@ package iu.i527.shalaka.todolistapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.view.View;
@@ -32,19 +31,95 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                 /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();*/
                 Intent intent = new Intent(getApplicationContext(), ScrollingActivity.class);
                 startActivity(intent);
-
-                Snackbar.make(view, "Adding a new task", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
             }
         });
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        initList();
+
+    }
+
+    public void initList(){
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        ArrayList<ToDoTask> questionList1 = getListItems();
+
+    }
+
+    public ArrayList<ToDoTask> getListItems(){
+
+        ArrayList<ToDoTask> toDoList = new ArrayList<ToDoTask>();
+        Date dt = new Date();
+        ToDoTask t1 = new ToDoTask();
+        ToDoTask t2 = new ToDoTask();
+        ToDoTask t3 = new ToDoTask();
+        ToDoTask t4 = new ToDoTask();
+        toDoList.add(t1);
+        toDoList.add(t2);
+        toDoList.add(t3);
+        toDoList.add(t4);
+        return toDoList;
+    }
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        return false;
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_all_tasks) {
+            // Handle the all tasks
+        } else if (id == R.id.nav_all_tasks) {
+
+        } else if (id == R.id.nav_pending) {
+
+        } else if (id == R.id.nav_completed) {
+
+        }
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 }
