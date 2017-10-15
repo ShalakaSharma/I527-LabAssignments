@@ -1,6 +1,7 @@
 package iu.i527.shalaka.todolistapp;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -13,12 +14,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CheckBox;
+import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    ArrayList<ToDoTask> toDoList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,14 +50,26 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        initList();
 
+        toDoList = getListItems();
+        renderToDoList(toDoList);
     }
 
-    public void initList(){
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        ArrayList<ToDoTask> questionList1 = getListItems();
+    public void renderToDoList(ArrayList<ToDoTask> toDoList) {
+
+        LinearLayout ll = (LinearLayout) findViewById(R.id.listLayout);
+
+        for(ToDoTask task:toDoList ){
+            CheckBox cb = new CheckBox(getApplicationContext());
+            cb.setText(task.getTask_description());
+            cb.setTextColor(Color.parseColor("#000000"));
+            cb.setHeight(30);
+            cb.setWidth(30);
+            cb.setTextSize(16);
+            cb.setPadding(10,60,10,60);
+            ll.addView(cb);
+        }
 
     }
 
@@ -60,10 +77,10 @@ public class MainActivity extends AppCompatActivity
 
         ArrayList<ToDoTask> toDoList = new ArrayList<ToDoTask>();
         Date dt = new Date();
-        ToDoTask t1 = new ToDoTask();
-        ToDoTask t2 = new ToDoTask();
-        ToDoTask t3 = new ToDoTask();
-        ToDoTask t4 = new ToDoTask();
+        ToDoTask t1 = new ToDoTask("Call James",dt,false);
+        ToDoTask t2 = new ToDoTask("Call Mom",dt,false);
+        ToDoTask t3 = new ToDoTask("Buy apples",dt,false);
+        ToDoTask t4 = new ToDoTask("Water plants",dt,false);
         toDoList.add(t1);
         toDoList.add(t2);
         toDoList.add(t3);
@@ -110,8 +127,6 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_all_tasks) {
             // Handle the all tasks
-        } else if (id == R.id.nav_all_tasks) {
-
         } else if (id == R.id.nav_pending) {
 
         } else if (id == R.id.nav_completed) {
