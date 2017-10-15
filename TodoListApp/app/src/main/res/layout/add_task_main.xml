@@ -44,8 +44,18 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="110dp"
+            android:layout_marginTop="130dp"
             android:layout_centerHorizontal="true"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/dateTextView"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="130dp"
+            android:layout_centerHorizontal="true"
+            android:visibility="invisible"
             android:gravity="center"/>
 
 

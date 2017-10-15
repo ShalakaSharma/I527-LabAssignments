@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -21,6 +22,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -57,7 +59,6 @@ public class MainActivity extends AppCompatActivity
         Intent intent = getIntent();
         if (intent.hasExtra("list")) {
             toDoList = (ArrayList)intent.getSerializableExtra("list");
-            Toast.makeText(this, "New list", Toast.LENGTH_SHORT).show();
         } else {
             toDoList = getListItems();
         }
@@ -65,8 +66,6 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                 /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*/
                 Intent intent = new Intent(getApplicationContext(), ScrollingActivity.class);
                 intent.putExtra("list", toDoList);
                 startActivity(intent);
@@ -132,12 +131,12 @@ public class MainActivity extends AppCompatActivity
                     }
             );
             cb.setButtonTintList(colorStateList);
-            cb.setPadding(10,60,10,60);
+            cb.setPadding(10,30,10,30);
+            final MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.todolist);
             cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    Toast.makeText(MainActivity.this,
-                            "isChecked:" + isChecked, Toast.LENGTH_SHORT).show();
+                    mp.start();
                     CheckBox cb = (CheckBox) buttonView;
                     TableRow t = (TableRow) buttonView.getParent();
                     EditText editText1 = (EditText) t.getChildAt(1);
@@ -152,10 +151,21 @@ public class MainActivity extends AppCompatActivity
             });
 
             tableRow.addView(cb);
-            final EditText editText = new EditText(getApplicationContext());
+            EditText editText = new EditText(getApplicationContext());
             editText.setText(task.getDate().getTime()+"");
             editText.setVisibility(View.INVISIBLE);
+            ViewGroup.LayoutParams lparams = new ViewGroup.LayoutParams(0,0);
+            editText.setLayoutParams(lparams);
             tableRow.addView(editText);
+
+            TextView textview = new TextView(getApplicationContext());
+            DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+            String dt = formatter.format(task.getDate());
+            textview.setText(dt);
+            textview.setTextColor(Color.parseColor("#000000"));
+            textview.setTextSize(16);
+            tableRow.addView(textview);
+
             ImageButton button = new ImageButton(getApplicationContext());
             button.setImageResource(R.drawable.btn_close_normal);
             button.setBackgroundColor(Color.TRANSPARENT);
@@ -163,13 +173,14 @@ public class MainActivity extends AppCompatActivity
 
                 @Override
                 public void onClick(View view) {
-
+                    mp.start();
                     ImageButton b = (ImageButton) view;
                     TableRow t = (TableRow) b.getParent();
                     CheckBox cb = (CheckBox) t.getChildAt(0);
                     EditText editText1 = (EditText) t.getChildAt(1);
+
                     final String taskDescription = cb.getText().toString();
-                    final Date date = new Date(Long.parseLong(editText.getText().toString()));
+                    final Date date = new Date(Long.parseLong(editText1.getText().toString()));
                     final boolean status = cb.isChecked();
 
                     deleteFromList(taskDescription, date);
@@ -227,21 +238,6 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -283,8 +279,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void changeTaskStatus(String taskDesc, Date date, boolean isCompleted) {
-        Toast.makeText(MainActivity.this,
-                "changeTaskStatus", Toast.LENGTH_SHORT).show();
         DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         String dtString  = formatter.format(date);
         for(int i=0; i< toDoList.size(); i++) {
@@ -296,6 +290,23 @@ public class MainActivity extends AppCompatActivity
             }
         }
         renderToDoList(toDoList,lastNavSelected);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_clear_list) {
+            toDoList.clear();
+            renderToDoList(toDoList,lastNavSelected);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 }
