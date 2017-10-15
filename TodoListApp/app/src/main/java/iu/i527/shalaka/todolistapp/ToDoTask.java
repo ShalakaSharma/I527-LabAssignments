@@ -48,6 +48,7 @@ public class ToDoTask implements Serializable {
         this.status = status;
     }
 
+
     public ToDoTask() {
     }
 }

@@ -27,6 +27,7 @@ import android.widget.LinearLayout;
 
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import android.widget.RelativeLayout;
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     ArrayList<ToDoTask> toDoList;
+    String lastNavSelected = "all";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,16 +78,38 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        renderToDoList(toDoList);
+        renderToDoList(toDoList, "all");
     }
 
 
-    public void renderToDoList(final ArrayList<ToDoTask> toDoList) {
+    public void renderToDoList(final ArrayList<ToDoTask> toDoList, String action) {
         System.out.println("In renderToDoList");
         TableLayout tableLayout =(TableLayout)findViewById(R.id.tableLayout);
         tableLayout.removeAllViews();
+        TextView textView = new TextView(getApplicationContext());
+        textView.setPadding(10,60,10,60);
+        textView.setTextSize(20);
+        textView.setTextColor(Color.parseColor("#000000"));
+        if(action == "all") {
+            textView.setText("All Tasks");
+        }
+        else if(action == "completed"){
+            textView.setText("Completed Tasks");
+        }
+        else if(action == "pending"){
+            textView.setText("Pending Tasks");
+        }
+
+        TableRow header = new TableRow(getApplicationContext());
+        header.addView(textView);
+        tableLayout.addView(header);
         int i = 0;
         for(ToDoTask task:toDoList ){
+            if(action.equals("completed") && !task.isStatus()) {
+                continue;
+            } else if(action.equals("pending") && task.isStatus()) {
+                continue;
+            }
             TableRow tableRow = new TableRow(getApplicationContext());
 
             CheckBox cb = new CheckBox(getApplicationContext());
@@ -106,22 +130,22 @@ public class MainActivity extends AppCompatActivity
             cb.setButtonTintList(colorStateList);
             cb.setPadding(10,60,10,60);
             cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                                              @Override
-                                              public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                                  Toast.makeText(MainActivity.this,
-                                                          "isChecked:" + isChecked, Toast.LENGTH_SHORT).show();
-                                                  CheckBox cb = (CheckBox) buttonView;
-                                                  TableRow t = (TableRow) buttonView.getParent();
-                                                  EditText editText1 = (EditText) t.getChildAt(1);
-                                                  Date date = new Date(Long.parseLong(editText1.getText().toString()));
-                                                  if (isChecked) {
-                                                      changeTaskStatus(cb.getText().toString(), date, true);
-                                                  } else {
-                                                      changeTaskStatus(cb.getText().toString(), date, false);
-                                                  }
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    Toast.makeText(MainActivity.this,
+                            "isChecked:" + isChecked, Toast.LENGTH_SHORT).show();
+                    CheckBox cb = (CheckBox) buttonView;
+                    TableRow t = (TableRow) buttonView.getParent();
+                    EditText editText1 = (EditText) t.getChildAt(1);
+                    Date date = new Date(Long.parseLong(editText1.getText().toString()));
+                    if (isChecked) {
+                        changeTaskStatus(cb.getText().toString(), date, true);
+                    } else {
+                        changeTaskStatus(cb.getText().toString(), date, false);
+                    }
 
-                                              }
-                                          });
+                }
+            });
 
             tableRow.addView(cb);
             final EditText editText = new EditText(getApplicationContext());
@@ -223,10 +247,14 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_all_tasks) {
             // Handle the all tasks
+            lastNavSelected = "all";
+            renderToDoList(toDoList,"all");
         } else if (id == R.id.nav_pending) {
-
+            lastNavSelected = "pending";
+            renderToDoList(toDoList,"pending");
         } else if (id == R.id.nav_completed) {
-
+            lastNavSelected = "completed";
+            renderToDoList(toDoList,"completed");
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -248,7 +276,7 @@ public class MainActivity extends AppCompatActivity
         if(indexToDelete != -1) {
             toDoList.remove(indexToDelete);
         }
-        renderToDoList(toDoList);
+        renderToDoList(toDoList,lastNavSelected);
     }
 
     public void changeTaskStatus(String taskDesc, Date date, boolean isCompleted) {
@@ -264,7 +292,7 @@ public class MainActivity extends AppCompatActivity
                 break;
             }
         }
-        renderToDoList(toDoList);
+        renderToDoList(toDoList,lastNavSelected);
     }
 
 }
