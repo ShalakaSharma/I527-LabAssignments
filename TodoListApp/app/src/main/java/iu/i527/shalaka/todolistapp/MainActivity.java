@@ -1,7 +1,9 @@
 package iu.i527.shalaka.todolistapp;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -14,9 +16,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.Toast;
+
+import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,7 +46,10 @@ public class MainActivity extends AppCompatActivity
         if (intent.hasExtra("list")) {
             toDoList = (ArrayList)intent.getSerializableExtra("list");
             Toast.makeText(this, "New list", Toast.LENGTH_SHORT).show();
+        } else {
+            toDoList = getListItems();
         }
+        System.out.println("todo list size in main after: " + toDoList.size());
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -58,24 +70,39 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        toDoList = getListItems();
         renderToDoList(toDoList);
     }
 
 
     public void renderToDoList(ArrayList<ToDoTask> toDoList) {
-
-        LinearLayout ll = (LinearLayout) findViewById(R.id.listLayout);
-
+        System.out.println("In renderToDoList");
+        TableLayout tableLayout =(TableLayout)findViewById(R.id.tableLayout);
         for(ToDoTask task:toDoList ){
+            TableRow tableRow = new TableRow(getApplicationContext());
+
             CheckBox cb = new CheckBox(getApplicationContext());
             cb.setText(task.getTask_description());
             cb.setTextColor(Color.parseColor("#000000"));
-            cb.setHeight(30);
-            cb.setWidth(30);
             cb.setTextSize(16);
+            ColorStateList colorStateList = new ColorStateList(
+                    new int[][] {
+                            new int[] { -android.R.attr.state_checked }, // unchecked
+                            new int[] {  android.R.attr.state_checked }  // checked
+                    },
+                    new int[] {
+                            Color.parseColor("#000000"),
+                            Color.parseColor("#FF1493")
+                    }
+            );
+            cb.setButtonTintList(colorStateList);
             cb.setPadding(10,60,10,60);
-            ll.addView(cb);
+            tableRow.addView(cb);
+            ImageButton button = new ImageButton(getApplicationContext());
+            button.setImageResource(R.drawable.btn_close_normal);
+            button.setBackgroundColor(Color.TRANSPARENT);
+            tableRow.addView(button);
+            tableLayout.addView(tableRow);
+
         }
 
     }

@@ -49,6 +49,7 @@ public class ScrollingActivity extends AppCompatActivity {
 
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         intent.putExtra("list", toDoList);
+        System.out.println("todo list size in scroll: " + toDoList.size());
         startActivity(intent);
     }
 }
