@@ -1,5 +1,6 @@
 package iu.i527.shalaka.todolistapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -30,8 +31,10 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Adding a new task", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                 /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();*/
+                Intent intent = new Intent(getApplicationContext(), ScrollingActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -58,10 +61,10 @@ public class MainActivity extends AppCompatActivity
 
         ArrayList<ToDoTask> toDoList = new ArrayList<ToDoTask>();
         Date dt = new Date();
-        ToDoTask t1 = new ToDoTask();
-        ToDoTask t2 = new ToDoTask();
-        ToDoTask t3 = new ToDoTask();
-        ToDoTask t4 = new ToDoTask();
+        ToDoTask t1 = new ToDoTask("Call James",dt,false);
+        ToDoTask t2 = new ToDoTask("Call Mom",dt,false);
+        ToDoTask t3 = new ToDoTask("Buy apples",dt,false);
+        ToDoTask t4 = new ToDoTask("Water plants",dt,false);
         toDoList.add(t1);
         toDoList.add(t2);
         toDoList.add(t3);

@@ -40,5 +40,9 @@ public class ToDoTask  {
         this.status = status;
     }
 
-
+    public ToDoTask(String task_description, Date date, boolean status) {
+        this.task_description = task_description;
+        this.date = date;
+        this.status = status;
+    }
 }
