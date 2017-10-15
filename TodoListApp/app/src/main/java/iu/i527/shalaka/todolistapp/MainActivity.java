@@ -1,18 +1,15 @@
 package iu.i527.shalaka.todolistapp;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.DialogInterface;
+
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
+
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
+import android.view.Gravity;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -23,25 +20,19 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import android.widget.RelativeLayout;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -91,7 +82,7 @@ public class MainActivity extends AppCompatActivity
         tableLayout.removeAllViews();
         TextView textView = new TextView(getApplicationContext());
         textView.setPadding(10,60,10,60);
-        textView.setTextSize(20);
+        textView.setTextSize(24);
         textView.setTextColor(Color.parseColor("#000000"));
         if(action == "all") {
             textView.setText("All Tasks");
@@ -119,7 +110,7 @@ public class MainActivity extends AppCompatActivity
             cb.setText(task.getTask_description());
             cb.setChecked(task.isStatus());
             cb.setTextColor(Color.parseColor("#000000"));
-            cb.setTextSize(16);
+            cb.setTextSize(20);
             ColorStateList colorStateList = new ColorStateList(
                     new int[][] {
                             new int[] { -android.R.attr.state_checked }, // unchecked
@@ -163,7 +154,7 @@ public class MainActivity extends AppCompatActivity
             String dt = formatter.format(task.getDate());
             textview.setText(dt);
             textview.setTextColor(Color.parseColor("#000000"));
-            textview.setTextSize(16);
+            textview.setTextSize(20);
             tableRow.addView(textview);
 
             ImageButton button = new ImageButton(getApplicationContext());

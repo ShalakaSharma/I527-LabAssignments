@@ -1,9 +1,5 @@
 package iu.i527.shalaka.todolistapp;
 
-import android.os.Bundle;
-import android.support.design.widget.NavigationView;
-import android.support.v7.app.AppCompatActivity;
-
 import java.util.Date;
 
 /**

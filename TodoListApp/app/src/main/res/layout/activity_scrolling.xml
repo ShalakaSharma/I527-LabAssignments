@@ -10,7 +10,7 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/app_bar_height"
+        android:layout_height="150dp"
         android:fitsSystemWindows="true"
         android:theme="@style/AppTheme.AppBarOverlay">
 
@@ -41,7 +41,9 @@
         android:layout_margin="@dimen/fab_margin"
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|end"
-        app:srcCompat="@drawable/btn_check_buttonless_on_white"
+        app:srcCompat="@drawable/btn_check_buttonless_on_mdpi"
+        android:scaleType="center"
+        android:tint="@android:color/white"
         android:onClick="onClickSaveButton"/>
 
 </android.support.design.widget.CoordinatorLayout>
