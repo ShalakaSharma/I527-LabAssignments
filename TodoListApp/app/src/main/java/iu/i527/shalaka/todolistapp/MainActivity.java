@@ -18,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -129,6 +130,7 @@ public class MainActivity extends AppCompatActivity
             );
             cb.setButtonTintList(colorStateList);
             cb.setPadding(10,60,10,60);
+
             cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -148,10 +150,20 @@ public class MainActivity extends AppCompatActivity
             });
 
             tableRow.addView(cb);
-            final EditText editText = new EditText(getApplicationContext());
+            EditText editText = new EditText(getApplicationContext());
             editText.setText(task.getDate().getTime()+"");
             editText.setVisibility(View.INVISIBLE);
+            ViewGroup.LayoutParams lparams = new ViewGroup.LayoutParams(0,0);
+            editText.setLayoutParams(lparams);
             tableRow.addView(editText);
+
+            TextView textview = new TextView(getApplicationContext());
+            DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+            String dt = formatter.format(task.getDate());
+            textview.setText(dt);
+            textview.setTextColor(Color.parseColor("#000000"));
+            tableRow.addView(textview);
+
             ImageButton button = new ImageButton(getApplicationContext());
             button.setImageResource(R.drawable.btn_close_normal);
             button.setBackgroundColor(Color.TRANSPARENT);
@@ -173,7 +185,7 @@ public class MainActivity extends AppCompatActivity
                     CheckBox cb = (CheckBox) t.getChildAt(0);
                     EditText editText1 = (EditText) t.getChildAt(1);
                     String taskDescription = cb.getText().toString();
-                    Date date = new Date(Long.parseLong(editText.getText().toString()));
+                    Date date = new Date(Long.parseLong(editText1.getText().toString()));
                     Toast.makeText(MainActivity.this,
                             taskDescription, Toast.LENGTH_SHORT).show();
                     DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
