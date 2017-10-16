@@ -1,10 +1,14 @@
 package iu.i527.shalaka.todolistapp;
 
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 
+import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -28,6 +32,7 @@ import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -37,28 +42,22 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    ArrayList<ToDoTask> toDoList;
+    //ArrayList<ToDoTask> toDoList;
     String lastNavSelected = "all";
+    TodoListDatabaseHelper mDbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mDbHelper = new TodoListDatabaseHelper(getApplicationContext());
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        Intent intent = getIntent();
-        if (intent.hasExtra("list")) {
-            toDoList = (ArrayList)intent.getSerializableExtra("list");
-        } else {
-            toDoList = getListItems();
-        }
-        System.out.println("todo list size in main after: " + toDoList.size());
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), ScrollingActivity.class);
-                intent.putExtra("list", toDoList);
                 startActivity(intent);
             }
         });
@@ -72,36 +71,44 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        renderToDoList(toDoList, "all");
+        renderToDoList("all");
     }
 
-
-    public void renderToDoList(final ArrayList<ToDoTask> toDoList, String action) {
-        System.out.println("In renderToDoList");
-        TableLayout tableLayout =(TableLayout)findViewById(R.id.tableLayout);
+    public void renderToDoList(String action) {
+        ArrayList<ToDoTask> toDoList = mDbHelper.fetchToDoListFromDB(lastNavSelected);
+        TableLayout tableLayout = (TableLayout) findViewById(R.id.tableLayout);
         tableLayout.removeAllViews();
         TextView textView = new TextView(getApplicationContext());
-        textView.setPadding(10,60,10,60);
+        textView.setPadding(10, 60, 10, 60);
         textView.setTextSize(24);
         textView.setTextColor(Color.parseColor("#000000"));
-        if(action == "all") {
+        textView.setTypeface(textView.getTypeface(), Typeface.BOLD);
+        if (action == "all") {
             textView.setText("All Tasks");
-        }
-        else if(action == "completed"){
+        } else if (action == "completed") {
             textView.setText("Completed Tasks");
-        }
-        else if(action == "pending"){
+        } else if (action == "pending") {
             textView.setText("Pending Tasks");
         }
 
         TableRow header = new TableRow(getApplicationContext());
         header.addView(textView);
         tableLayout.addView(header);
-        int i = 0;
-        for(ToDoTask task:toDoList ){
-            if(action.equals("completed") && !task.isStatus()) {
+        if(toDoList.size() == 0) {
+            TextView textView2 = new TextView(getApplicationContext());
+            textView2.setText("**No tasks to show**");
+            textView2.setTypeface(textView.getTypeface(), Typeface.ITALIC);
+            textView2.setTextColor(Color.parseColor("#000000"));
+            textView2.setTextSize(14);
+            textView2.setPadding(30, 30, 10, 30);
+            TableRow row = new TableRow(getApplicationContext());
+            row.addView(textView2);
+            tableLayout.addView(row);
+        }
+        for (ToDoTask task : toDoList) {
+            if (action.equals("completed") && !task.isStatus()) {
                 continue;
-            } else if(action.equals("pending") && task.isStatus()) {
+            } else if (action.equals("pending") && task.isStatus()) {
                 continue;
             }
             TableRow tableRow = new TableRow(getApplicationContext());
@@ -112,17 +119,17 @@ public class MainActivity extends AppCompatActivity
             cb.setTextColor(Color.parseColor("#000000"));
             cb.setTextSize(20);
             ColorStateList colorStateList = new ColorStateList(
-                    new int[][] {
-                            new int[] { -android.R.attr.state_checked }, // unchecked
-                            new int[] {  android.R.attr.state_checked }  // checked
+                    new int[][]{
+                            new int[]{-android.R.attr.state_checked}, // unchecked
+                            new int[]{android.R.attr.state_checked}  // checked
                     },
-                    new int[] {
+                    new int[]{
                             Color.parseColor("#000000"),
                             Color.parseColor("#FF1493")
                     }
             );
             cb.setButtonTintList(colorStateList);
-            cb.setPadding(10,30,10,30);
+            cb.setPadding(10, 30, 10, 30);
             final MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.todolist);
             cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
@@ -133,19 +140,22 @@ public class MainActivity extends AppCompatActivity
                     EditText editText1 = (EditText) t.getChildAt(1);
                     Date date = new Date(Long.parseLong(editText1.getText().toString()));
                     if (isChecked) {
-                        changeTaskStatus(cb.getText().toString(), date, true);
+                        mDbHelper.changeTaskStatusInDB(cb.getText().toString(), date, true);
+                        Toast.makeText(getApplicationContext(), "Task marked as completed", Toast.LENGTH_SHORT).show();
                     } else {
-                        changeTaskStatus(cb.getText().toString(), date, false);
+                        mDbHelper.changeTaskStatusInDB(cb.getText().toString(), date, false);
+                        Toast.makeText(getApplicationContext(), "Task marked as pending", Toast.LENGTH_SHORT).show();
                     }
+                    renderToDoList(lastNavSelected);
 
                 }
             });
 
             tableRow.addView(cb);
             EditText editText = new EditText(getApplicationContext());
-            editText.setText(task.getDate().getTime()+"");
+            editText.setText(task.getDate().getTime() + "");
             editText.setVisibility(View.INVISIBLE);
-            ViewGroup.LayoutParams lparams = new ViewGroup.LayoutParams(0,0);
+            ViewGroup.LayoutParams lparams = new ViewGroup.LayoutParams(0, 0);
             editText.setLayoutParams(lparams);
             tableRow.addView(editText);
 
@@ -173,8 +183,8 @@ public class MainActivity extends AppCompatActivity
                     final String taskDescription = cb.getText().toString();
                     final Date date = new Date(Long.parseLong(editText1.getText().toString()));
                     final boolean status = cb.isChecked();
-
-                    deleteFromList(taskDescription, date);
+                    mDbHelper.deleteFromDatabase(taskDescription, date.getTime()+"");
+                    renderToDoList(lastNavSelected);
 
                     Snackbar.make(findViewById(R.id.tableLayout), "1 Item Removed", Snackbar.LENGTH_LONG)
                             .setAction("UNDO",
@@ -183,8 +193,8 @@ public class MainActivity extends AppCompatActivity
                                         @Override
                                         public void onClick(View view) {
                                             ToDoTask toDoTask = new ToDoTask(taskDescription, date, status);
-                                            toDoList.add(toDoTask);
-                                            renderToDoList(toDoList,lastNavSelected);
+                                            mDbHelper.addTodoTaskToDB(toDoTask);
+                                            renderToDoList(lastNavSelected);
                                         }
                                     }).show();
 
@@ -198,20 +208,23 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public ArrayList<ToDoTask> getListItems(){
+    public ArrayList<ToDoTask> getListItems() {
+        // Gets the data repository in write mode
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         ArrayList<ToDoTask> toDoList = new ArrayList<ToDoTask>();
         Date dt = new Date();
-        ToDoTask t1 = new ToDoTask("Call James",dt,false);
-        ToDoTask t2 = new ToDoTask("Call Mom",dt,false);
-        ToDoTask t3 = new ToDoTask("Buy apples",dt,false);
-        ToDoTask t4 = new ToDoTask("Water plants",dt,false);
+        ToDoTask t1 = new ToDoTask("Call James", dt, false);
+        ToDoTask t2 = new ToDoTask("Call Mom", dt, false);
+        ToDoTask t3 = new ToDoTask("Buy apples", dt, false);
+        ToDoTask t4 = new ToDoTask("Water plants", dt, false);
         toDoList.add(t1);
         toDoList.add(t2);
         toDoList.add(t3);
         toDoList.add(t4);
         return toDoList;
     }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -234,54 +247,53 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
         if (id == R.id.nav_all_tasks) {
             // Handle the all tasks
             lastNavSelected = "all";
-            renderToDoList(toDoList,"all");
+            renderToDoList("all");
         } else if (id == R.id.nav_pending) {
             lastNavSelected = "pending";
-            renderToDoList(toDoList,"pending");
+            renderToDoList("pending");
         } else if (id == R.id.nav_completed) {
             lastNavSelected = "completed";
-            renderToDoList(toDoList,"completed");
+            renderToDoList("completed");
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    public void deleteFromList(String taskDesc, Date date) {
+    /*public void deleteFromList(String taskDesc, Date date) {
         DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        String dtString  = formatter.format(date);
+        String dtString = formatter.format(date);
         int indexToDelete = -1;
-        for(int i=0; i< toDoList.size(); i++) {
+        for (int i = 0; i < toDoList.size(); i++) {
             ToDoTask task = toDoList.get(i);
             String dt = formatter.format(task.getDate());
-            if(task.getTask_description().equals(taskDesc) && dtString.equals(dt)) {
+            if (task.getTask_description().equals(taskDesc) && dtString.equals(dt)) {
                 indexToDelete = i;
                 break;
             }
         }
-        if(indexToDelete != -1) {
+        if (indexToDelete != -1) {
             toDoList.remove(indexToDelete);
         }
-        renderToDoList(toDoList,lastNavSelected);
-    }
+        renderToDoList(toDoList, lastNavSelected);
+    }*/
 
-    public void changeTaskStatus(String taskDesc, Date date, boolean isCompleted) {
+    /*public void changeTaskStatus(String taskDesc, Date date, boolean isCompleted) {
         DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        String dtString  = formatter.format(date);
-        for(int i=0; i< toDoList.size(); i++) {
+        String dtString = formatter.format(date);
+        for (int i = 0; i < toDoList.size(); i++) {
             ToDoTask task = toDoList.get(i);
             String dt = formatter.format(task.getDate());
-            if(task.getTask_description().equals(taskDesc) && dtString.equals(dt)) {
+            if (task.getTask_description().equals(taskDesc) && dtString.equals(dt)) {
                 task.setStatus(isCompleted);
                 break;
             }
         }
-        renderToDoList(toDoList,lastNavSelected);
-    }
+        renderToDoList(toDoList, lastNavSelected);
+    }*/
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -292,12 +304,17 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_clear_list) {
-            toDoList.clear();
-            renderToDoList(toDoList,lastNavSelected);
+            mDbHelper.clearToDoListInDB();
+            renderToDoList(lastNavSelected);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onDestroy() {
+        mDbHelper.close();
+        super.onDestroy();
+    }
 }

@@ -10,6 +10,7 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class ToDoTask implements Serializable {
 
+    private long id;
     private String task_description;
     private Date date;
     private boolean status;
@@ -46,5 +47,20 @@ public class ToDoTask implements Serializable {
 
 
     public ToDoTask() {
+    }
+
+    public ToDoTask(long id, String task_description, Date date, boolean status) {
+        this.id = id;
+        this.task_description = task_description;
+        this.date = date;
+        this.status = status;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 }

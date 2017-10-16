@@ -17,10 +17,11 @@ import java.util.Date;
 
 public class ScrollingActivity extends AppCompatActivity {
 
-    ArrayList<ToDoTask> toDoList;
+    TodoListDatabaseHelper mDbHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mDbHelper = new TodoListDatabaseHelper(getApplicationContext());
         setContentView(R.layout.activity_scrolling);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         CalendarView calendarView = (CalendarView) findViewById(R.id.simpleCalendarView);
@@ -41,12 +42,6 @@ public class ScrollingActivity extends AppCompatActivity {
         });
 
         setSupportActionBar(toolbar);
-        Intent intent = getIntent();
-        if (intent.hasExtra("list")) {
-            toDoList = (ArrayList)intent.getSerializableExtra("list");
-        } else {
-            toDoList = new ArrayList<ToDoTask>();
-        }
     }
 
     public void onClickSaveButton(View view) {
@@ -54,13 +49,16 @@ public class ScrollingActivity extends AppCompatActivity {
         EditText editText = (EditText) findViewById(R.id.editText);
         String taskDescription = editText.getText().toString();
         Date date = new Date(Long.parseLong(textview.getText().toString()));
-
         ToDoTask newTask = new ToDoTask(taskDescription, date, false);
-
-        toDoList.add(newTask);
+        mDbHelper.addTodoTaskToDB(newTask);
         Toast.makeText(this, "Task Added", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        intent.putExtra("list", toDoList);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onDestroy() {
+        mDbHelper.close();
+        super.onDestroy();
     }
 }
