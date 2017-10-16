@@ -52,8 +52,7 @@ public class ScrollingActivity extends AppCompatActivity {
         ToDoTask newTask = new ToDoTask(taskDescription, date, false);
         mDbHelper.addTodoTaskToDB(newTask);
         Toast.makeText(this, "Task Added", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        startActivity(intent);
+        finish();
     }
 
     @Override

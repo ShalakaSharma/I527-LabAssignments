@@ -19,21 +19,16 @@ public class TodoListDatabaseHelper extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "ToDoList.db";
 
+    SQLiteDatabase database;
+
     public TodoListDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     public void onCreate(SQLiteDatabase db) {
+        database = db;
         db.execSQL(SQL_CREATE_ENTRIES);
-        Date dt = new Date();
-        ToDoTask t1 = new ToDoTask("Call James", dt, false);
-        ToDoTask t2 = new ToDoTask("Call Mom", dt, false);
-        ToDoTask t3 = new ToDoTask("Buy apples", dt, false);
-        ToDoTask t4 = new ToDoTask("Water plants", dt, false);
-        this.addTodoTaskToDB(t1);
-        this.addTodoTaskToDB(t2);
-        this.addTodoTaskToDB(t3);
-        this.addTodoTaskToDB(t4);
+        this.addInitialTodoTasksToDB(db);
     }
 
     @Override
@@ -49,7 +44,7 @@ public class TodoListDatabaseHelper extends SQLiteOpenHelper {
                     ToDoListContract.ToDoList.COLUMN_NAME_STATUS+ " TEXT)";
 
     public void addTodoTaskToDB(ToDoTask task) {
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(ToDoListContract.ToDoList.COLUMN_NAME_TASK_DESCRIPTION, task.getTask_description());
         values.put(ToDoListContract.ToDoList.COLUMN_NAME_DATE, task.getDate().getTime()+"");
@@ -57,9 +52,25 @@ public class TodoListDatabaseHelper extends SQLiteOpenHelper {
         db.insert(ToDoListContract.ToDoList.TABLE_NAME, null, values);
     }
 
+    public void addInitialTodoTasksToDB(SQLiteDatabase db) {
+        Date dt = new Date();
+        ToDoTask t1 = new ToDoTask("Call James", dt, false);
+        ToDoTask t2 = new ToDoTask("Call Mom", dt, false);
+        ContentValues values = new ContentValues();
+        values.put(ToDoListContract.ToDoList.COLUMN_NAME_TASK_DESCRIPTION, t1.getTask_description());
+        values.put(ToDoListContract.ToDoList.COLUMN_NAME_DATE, t1.getDate().getTime()+"");
+        values.put(ToDoListContract.ToDoList.COLUMN_NAME_STATUS, t1.isStatus()+"");
+        db.insert(ToDoListContract.ToDoList.TABLE_NAME, null, values);
+        values = new ContentValues();
+        values.put(ToDoListContract.ToDoList.COLUMN_NAME_TASK_DESCRIPTION, t2.getTask_description());
+        values.put(ToDoListContract.ToDoList.COLUMN_NAME_DATE, t2.getDate().getTime()+"");
+        values.put(ToDoListContract.ToDoList.COLUMN_NAME_STATUS, t2.isStatus()+"");
+        db.insert(ToDoListContract.ToDoList.TABLE_NAME, null, values);
+    }
+
 
     public ArrayList<ToDoTask> fetchToDoListFromDB(String lastNavSelected) {
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase db = getWritableDatabase();
         String[] projection = {
                 ToDoListContract.ToDoList._ID,
                 ToDoListContract.ToDoList.COLUMN_NAME_TASK_DESCRIPTION,
@@ -113,7 +124,7 @@ public class TodoListDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void deleteFromDatabase(String taskDesc, String date) {
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = getWritableDatabase();
         // Define 'where' part of query.
         String selection = ToDoListContract.ToDoList.COLUMN_NAME_TASK_DESCRIPTION + " LIKE ? and " +
         ToDoListContract.ToDoList.COLUMN_NAME_DATE + " LIKE ?";
@@ -123,7 +134,7 @@ public class TodoListDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void changeTaskStatusInDB(String taskDesc, Date date, boolean isCompleted) {
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = getWritableDatabase();
 
         // New value for one column
         ContentValues values = new ContentValues();
@@ -143,7 +154,7 @@ public class TodoListDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void clearToDoListInDB () {
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = getWritableDatabase();
         db.execSQL("delete from "+ ToDoListContract.ToDoList.TABLE_NAME);
     }
 
