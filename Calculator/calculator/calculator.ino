@@ -9,25 +9,27 @@
 const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 char input_key[]={'0','1','2','3','4','5','6','7','8','9','+','-','*','/', 'S'};
-const int solution_button = 9;     // the number of the pushbutton pin
+const int delete_button = 9;     // the number of the pushbutton pin
 const int enter_button = 8;     // the number of the pushbutton pin
-int button_state_sol = HIGH;         // variable for reading the pushbutton status
+int button_state_delete = HIGH;         // variable for reading the pushbutton status
 int button_state_enter = HIGH;         // variable for reading the pushbutton status
 int i=15;
 int j=0;
 char oper = ' ';
-int op1,op2;
+int op1,op2,op3;
 String expression;
 boolean displayAns = false;
 String expression_buffer = "";
 boolean pendingCalc = false;
-
+boolean op3_flag = false;
+char oper_prev = ' ';
 int converter = 1024/14;
+
 void setup() {
   // set up the LCD's number of columns and rows:
   lcd.begin(16, 2);
   lcd.clear();
-  pinMode(solution_button,INPUT);
+  pinMode(delete_button,INPUT);
   pinMode(enter_button,INPUT);
   // turn on the cursor:
   lcd.cursor();
@@ -39,9 +41,6 @@ void setup() {
 
 
 void loop() {
-// if(displayAns) {
-//  return;
-// }
  int sensorValue = analogRead(A0);
  int input = sensorValue/converter;
  lcd.print(input_key[input]);
@@ -81,45 +80,53 @@ void loop() {
       } else {
         // find op2
         op2 = expression.toInt();
+        char new_oper = char(input_key[input]);
         // compute ans -- op1 oper op2
         int ans;
-        if(oper == '+') {
-          ans = op1+op2;
-          Serial.print("ans:");
-          Serial.println(ans);
-        } else if(oper == '-'){
-          ans = op1-op2;
-          Serial.print("ans:");
-          Serial.println(ans);
-        } else if(oper == '*'){
-          ans = op1*op2;
-          Serial.print("ans:");
-          Serial.println(ans);
-        } else if(oper == '/'){
-          ans = op1/op2;
-          Serial.print("ans:");
-          Serial.println(ans);
-        }
-        String answer_string = String(ans);
+        if((!op3_flag) && (new_oper == '*'  || new_oper == '/')){
+          op3 = op1;
+          oper_prev = oper; 
+          op1 = op2;  
+          op3_flag = true;
+        } else {
+          if(oper == '+') {
+            ans = op1+op2;
+            Serial.print("ans:");
+            Serial.println(ans);
+          } else if(oper == '-'){
+            ans = op1-op2;
+            Serial.print("ans:");
+            Serial.println(ans);
+          } else if(oper == '*'){
+            ans = op1*op2;
+            Serial.print("ans:");
+            Serial.println(ans);
+          } else if(oper == '/'){
+            ans = op1/op2;
+            Serial.print("ans:");
+            Serial.println(ans);
+          }
+          String answer_string = String(ans);
         
-        // set op1 to ans
-        op1 = ans;
-        Serial.print("operand 1:");
-        Serial.println(op1);
-        // set oper to new oper
-        oper = char(input_key[input]);
-        // update buffer
-        expression_buffer +=  expression + " " + oper + " ";
-        Serial.print("Expression buffer:");
-        Serial.println(expression_buffer);
-        lcd.setCursor(i-expression_buffer.length(),0); //print to upper line
-        lcd.print(expression_buffer);
-        lcd.setCursor(0,1); // clear lower line
-        lcd.print("                ");
-        lcd.setCursor(i,1);
-        expression = "";
-        pendingCalc = false;
-        oper = ' ';
+          // set op1 to ans
+          op1 = ans;
+          Serial.print("operand 1:");
+          Serial.println(op1);
+          
+         }
+          // set oper to new oper
+          oper = new_oper;
+          // update buffer
+          expression_buffer +=  expression + " " + oper + " ";
+          Serial.print("Expression buffer:");
+          Serial.println(expression_buffer);
+          lcd.setCursor(i-expression_buffer.length(),0); //print to upper line
+          lcd.print(expression_buffer);
+          lcd.setCursor(0,1); // clear lower line
+          lcd.print("                ");
+          lcd.setCursor(i,1);
+          expression = "";
+          pendingCalc = false;
       }
     } else if(input == 14) {
       op2 = expression.toInt();
@@ -147,6 +154,17 @@ void loop() {
         Serial.print("ans:");
         Serial.println(ans);
       }
+      if(op3_flag) {
+        if(oper_prev == '+') {
+           ans += op3;
+        } else if(oper_prev == '-') {
+          ans = op3 - ans;
+        }
+       
+      } 
+      op3_flag = false;
+      oper_prev = ' ';
+      op3 = 0;
       String answer_string = String(ans);
       Serial.print("ans_string:");
       Serial.println(answer_string);
@@ -159,7 +177,6 @@ void loop() {
       lcd.setCursor(i,1);
       expression = answer_string;
       pendingCalc = false;
-      oper = ' ';
       expression_buffer = "";
     }
  }
@@ -167,6 +184,25 @@ void loop() {
  {
     Serial.println("ENTER RELEASED");
     button_state_enter = HIGH;
+ }
+ 
+ //Delete button
+ if(digitalRead(delete_button) == LOW && button_state_delete == HIGH){
+    Serial.println("DELETE PRESSED");
+    button_state_delete = LOW;
+    int len = expression.length();
+    if(len>0) {
+      expression = expression.substring(0,len-1);
+      lcd.setCursor(0,1); // clear lower line
+      lcd.print("                ");
+      lcd.setCursor(i-expression.length(),1); // write new expression to lower line
+      lcd.print(expression);  
+    } else {
+      Serial.println("Nothing to delete");
+    }
+ } else if (digitalRead(delete_button) == HIGH && button_state_delete == LOW){
+    Serial.println("DELETE RELEASED");
+    button_state_delete = HIGH;
  }
   delay(1000);
 }
