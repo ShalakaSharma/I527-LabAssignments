@@ -45,8 +45,8 @@ void loop() {
  int input = sensorValue/converter;
  lcd.print(input_key[input]);
  lcd.setCursor(i,1);
- Serial.print("Input:");
- Serial.println(input);
+// Serial.print("Input:");
+// Serial.println(input);
   //Enter button
  if(digitalRead(enter_button) == LOW && button_state_enter == HIGH){
     Serial.println("ENTER PRESSED");
@@ -60,7 +60,10 @@ void loop() {
       Serial.print("expression:");
       Serial.println(expression_to_print_to_lcd);
     } else if(input >=10 && input<=13) {
+      Serial.print("current calc flag was:");
+      Serial.println(pendingCalc);
       if(!pendingCalc) {
+        Serial.println("in not pendingCalc:");
         oper = char(input_key[input]);
         Serial.print("operator:");
         Serial.println(oper);
@@ -78,17 +81,50 @@ void loop() {
         expression = "";
         pendingCalc = true;
       } else {
+        Serial.println("in pendingCalc:");
         // find op2
         op2 = expression.toInt();
         char new_oper = char(input_key[input]);
         // compute ans -- op1 oper op2
         int ans;
-        if((!op3_flag) && (new_oper == '*'  || new_oper == '/')){
+        if((!op3_flag && (oper == '+' || oper == '-')) && (new_oper == '*'  || new_oper == '/')){
+          Serial.println("bodmas logic:");
           op3 = op1;
           oper_prev = oper; 
           op1 = op2;  
           op3_flag = true;
+          Serial.print("pending calc flag was:");
+          Serial.println(pendingCalc);
+          pendingCalc = true;
+          Serial.print("pending calc flag is:");
+          Serial.println(pendingCalc);
+          Serial.print("oper_prev:");
+          Serial.println(oper_prev);
+          Serial.print("operand3:");
+          Serial.println(op3);
+          Serial.print("new operand1:");
+          Serial.println(op1);
         } else {
+          Serial.println("no bodmas logic required here:");
+          if(oper == '/' && op2 == 0) {
+            Serial.print("Invalid Operation. / by 0");
+            lcd.clear();
+            lcd.setCursor(0,0);
+            lcd.print("INVALID. / BY 0");
+            delay(1000);
+            op3_flag = false;
+            oper_prev = ' ';
+            op3 = 0;
+            lcd.setCursor(0,0); // clear upper line
+            lcd.print("                ");
+            lcd.setCursor(0,1); // clear lower line
+            lcd.print("                ");
+            lcd.setCursor(i,1);
+            expression = "";
+            pendingCalc = false;
+            expression_buffer = "";
+            return;
+          }
           if(oper == '+') {
             ans = op1+op2;
             Serial.print("ans:");
@@ -102,6 +138,7 @@ void loop() {
             Serial.print("ans:");
             Serial.println(ans);
           } else if(oper == '/'){
+            
             ans = op1/op2;
             Serial.print("ans:");
             Serial.println(ans);
@@ -112,6 +149,7 @@ void loop() {
           op1 = ans;
           Serial.print("operand 1:");
           Serial.println(op1);
+          pendingCalc = true;
           
          }
           // set oper to new oper
@@ -126,7 +164,7 @@ void loop() {
           lcd.print("                ");
           lcd.setCursor(i,1);
           expression = "";
-          pendingCalc = false;
+          
       }
     } else if(input == 14) {
       op2 = expression.toInt();
@@ -137,6 +175,25 @@ void loop() {
       Serial.print("operand 2:");
       Serial.println(op2);
       int ans;
+      if(oper == '/' && op2 == 0) {
+        Serial.print("Invalid Operation. / by 0");
+        lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print("INVALID. / BY 0");
+        delay(1000);
+        op3_flag = false;
+        oper_prev = ' ';
+        op3 = 0;
+        lcd.setCursor(0,0); // clear upper line
+        lcd.print("                ");
+        lcd.setCursor(0,1); // clear lower line
+        lcd.print("                ");
+        lcd.setCursor(i,1);
+        expression = "";
+        pendingCalc = false;
+        expression_buffer = "";
+        return;
+      }
       if(oper == '+') {
         ans = op1+op2;
         Serial.print("ans:");
